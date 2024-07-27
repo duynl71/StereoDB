@@ -232,8 +232,12 @@ module internal QueryBuilder =
                 | "=" -> Expression.Equal(leftExpression, rightExpression)
                 | _ -> failwith $"Operator {op} is not implemented"
             | UnaryLogicalOperator (op, expr) -> failwith "Not implemented"
-            | IsNull (expr) -> failwith "Not implemented"
-            | IsNotNull (expr) -> failwith "Not implemented"
+            | IsNull (expr) -> 
+                let expression = this.buildExpression row expr
+                Expression.Equal(Expression.Constant(null), expression)
+            | IsNotNull (expr) ->
+                let expression = this.buildExpression row expr
+                Expression.NotEqual(Expression.Constant(null), expression)
 
         member this.buildFilterProjection tableEntityType whereExpression =
             // Build Update projection
